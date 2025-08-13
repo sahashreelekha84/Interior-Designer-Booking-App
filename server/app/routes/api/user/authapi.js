@@ -1,0 +1,21 @@
+const express=require('express')
+
+const { Authcheck } = require('../../../middleware/Authcheck')
+const AuthUserController = require('../../../controller/api/user/AuthUserController')
+const DesignerapiController = require('../../../controller/api/seller/DesignerapiController')
+const ContactController=require('../../../controller/api/user/ContactController')
+const router=express.Router()
+router.post('/register',AuthUserController.register)
+router.post('/login',AuthUserController.login)
+router.post('/verifyotp',AuthUserController.verifyotp)
+router.post('/resendotp',AuthUserController.resendotp)
+router.post('/forgetpassword',AuthUserController.forgetpassword)
+router.post('/resetpassword/:token',AuthUserController.resetpassword)
+router.post('/usermessage',ContactController.sendmessage)
+router.use(Authcheck)
+
+router.get('/userdashboard',AuthUserController.userdashboard)
+router.get('/userprofile',AuthUserController.userprofile)
+router.get('/designer/profile',DesignerapiController.designerprofile)
+router.get('/designer/dasboard',DesignerapiController.designerDashboard)
+module.exports=router
