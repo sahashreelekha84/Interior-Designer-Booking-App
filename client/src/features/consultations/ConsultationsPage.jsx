@@ -31,7 +31,7 @@ const ConsultationsPage = () => {
     queryFn: fetchconsultation,
   });
   // const designerId=consultations.slots_booked.map(x=>{return x._id})
-  console.log(consultations);
+  console.log('consultation',consultations);
 
   const { mutate: postReview, isPending: isPosting } = useMutation({
     mutationFn: submitReview,
@@ -127,15 +127,17 @@ const ConsultationsPage = () => {
 
   if (isLoading) return <Typography>Loading...</Typography>;
   const slots_book = consultations.flatMap(x => x.slots_booked || []);
-  console.log(slots_book);
+  console.log('slot_book',slots_book.map(x=>x.userId
+)
+);
   const bookedSlots = slots_book || [];
 
-  // console.log(bookedSlots);
+   console.log(bookedSlots);
   // Filter consultations for current user
   const userConsultations = bookedSlots.filter(
     (slot) => slot.userId === userId
   );
-  console.log(userConsultations);
+  console.log('userConsultations',userConsultations);
   return (
     <Grid container>
       <Grid item xs={12} sm={3} md={2}>
@@ -146,12 +148,12 @@ const ConsultationsPage = () => {
           My Consultations
         </Typography>
 
-        {userConsultations.length === 0 ? (
+        {userConsultations?.length === 0 ? (
           <Typography variant="body1" color="text.secondary">
             No consultations yet.
           </Typography>
         ) : (
-          userConsultations.map((consultation) => (
+          userConsultations?.map((consultation) => (
             <Card key={consultation._id} sx={{ mb: 3 }}>
               <CardContent>
                 <Typography variant="h6">{consultation.designername}</Typography>
@@ -165,7 +167,7 @@ const ConsultationsPage = () => {
                 <Divider sx={{ my: 2 }} />
 
 
-                {consultation.status === 'booked' && (
+                {consultation?.status === 'booked' && (
                   <>
                     <Button
                       variant="outlined"
