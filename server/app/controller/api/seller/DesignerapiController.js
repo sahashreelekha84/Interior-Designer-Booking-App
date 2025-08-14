@@ -164,7 +164,7 @@ class DesignerApiController {
     async Designerlist(req, res) {
         try {
             //console.log(req.body);
-            const Designer = await DesignerModel.find({ isDeleted: false,isActive:true})
+            const Designer = await DesignerModel.find({ isDeleted: false, isActive: true })
 
             return res.status(200).json({
                 status: true,
@@ -201,19 +201,55 @@ class DesignerApiController {
     }
     async designerDashboard(req, res) {
         console.log(req.user);
+        const designerId = req.user._id;
+        const totalClients = req.user.totalClients
+        const bookedCount = req.user.bookedCount
+        const designer = await DesignerModel.findById(designerId).select(
+            '-password -__v'
+        );
+        console.log(designer.totalClients);
+
+        if (!designer) {
+            return res.status(404).json({
+                status: false,
+                message: 'Designer not found'
+            });
+        }
         const totalDesigners = await DesignerModel.countDocuments();
         const activeDesigners = await DesignerModel.countDocuments({ isActive: true });
         const inactiveDesigners = await DesignerModel.countDocuments({ isActive: false });
 
+        // Calculate some useful stats
+        const totalBookedSlots = designer.slots_booked.length;
+        const upcomingSlots = designer.slots_booked.filter(slot => {
+            // Filter slots with date in the future and status not cancelled/completed
+            const slotDate = new Date(slot.date);
+            const now = new Date();
 
+            if (slotDate >= now) {
+                
+                return !['cancelled', 'completed'].includes(slot.status);
+            } else {
+                
+                return slot.status === 'cancelled';
+            }
+
+        });
         try {
             return res.status(200).json({
                 status: true,
                 message: 'welcome to designer dashboard succesfully',
-                data: req.user,
-                totalDesigners,
-                activeDesigners,
-                inactiveDesigners
+                data: {
+                    profile: designer,
+                    totalClients,
+                    bookedCount,
+                    totalBookedSlots,
+                    upcomingSlots,
+                    totalDesigners,
+                    activeDesigners,
+                    inactiveDesigners
+                }
+
             });
 
         } catch (error) {
@@ -283,24 +319,24 @@ class DesignerApiController {
             });
         }
     }
-   async getReviewByUserAndDesigner  (req, res)  {
-  const { userId, designerId } = req.params;
+    async getReviewByUserAndDesigner(req, res) {
+        const { userId, designerId } = req.params;
 
-  try {
-    const review = await DesignerModel.findOne({ userId, designerId });
-    if (!review) {
-      return res.status(404).json({ message: 'No review found' });
-    }
-    return res.status(200).json({
-        status:true,
-        message:'single review fetched successfully',
-        data:review
-    })
-  
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
+        try {
+            const review = await DesignerModel.findOne({ userId, designerId });
+            if (!review) {
+                return res.status(404).json({ message: 'No review found' });
+            }
+            return res.status(200).json({
+                status: true,
+                message: 'single review fetched successfully',
+                data: review
+            })
+
+        } catch (error) {
+            res.status(500).json({ message: 'Server error', error });
+        }
+    };
     async portfolio(req, res) {
         try {
             const { designerId, title, category, createdAt } = req.body;
