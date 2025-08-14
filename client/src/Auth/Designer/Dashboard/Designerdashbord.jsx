@@ -29,10 +29,13 @@ const StatCard = ({ icon, label, value }) => (
 );
 
 const Designerdashbord = () => {
-  const { data: dashboard, isLoading } = useQuery({
-    queryKey: ['dashboard'],
-    queryFn: fetchdashbord,
-  });
+const { data: dashboard, isLoading} = useQuery({
+  queryKey: ['dashboard'],
+  queryFn: fetchdashbord,
+ 
+});
+
+
   console.log(dashboard);
 
   if (isLoading) return <Typography>Loading...</Typography>;
@@ -46,20 +49,20 @@ const Designerdashbord = () => {
         {/* Top Stats */}
         <Grid container spacing={3} mb={4}>
           <Grid item xs={12} sm={4}>
-            <StatCard icon={<MonetizationOn />} label="Subscription" value={dashboard.subscriptionType} />
+            <StatCard icon={<MonetizationOn />} label="Subscription" value={dashboard.profile.subscriptionType} />
           </Grid>
           <Grid item xs={12} sm={4}>
             <StatCard icon={<EventNote />} label="Appointments" value={dashboard.bookedCount} />
           </Grid>
-      
+
           <Grid item xs={12} sm={4}>
             <StatCard icon={<Person />} label="Clients" value={dashboard.totalClients} />
           </Grid>
-              <Grid item xs={12} sm={4}>
-            <StatCard icon={<EventNote />} label="SubscriptionStart" value={dashboard.subscriptionStart} />
+          <Grid item xs={12} sm={4}>
+            <StatCard icon={<EventNote />} label="SubscriptionStart" value={dashboard.profile.subscriptionStart} />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <StatCard icon={<EventNote />} label="SubscriptionEnd" value={dashboard.subscriptionEnd} />
+            <StatCard icon={<EventNote />} label="SubscriptionEnd" value={dashboard.profile.subscriptionEnd} />
           </Grid>
         </Grid>
 
@@ -69,7 +72,7 @@ const Designerdashbord = () => {
             Latest Bookings
           </Typography>
           <List>
-            {dashboard?.slots_booked?.map((booking, index) => (
+            {dashboard?.profile?.slots_booked?.map((booking, index) => (
               <React.Fragment key={index}>
                 <ListItem>
                   <ListItemAvatar>
@@ -87,7 +90,7 @@ const Designerdashbord = () => {
                     {booking.status === 'completed' && (
                       <Typography color="green">Completed</Typography>
                     )}
-                    {booking.status === 'Confirmed' && (
+                    {booking.status === 'confirmed' && (
                       <Typography color="green">Confirmed</Typography>
                     )}
                     {booking.status === 'cancelled' && (
