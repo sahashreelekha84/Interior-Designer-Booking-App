@@ -118,6 +118,8 @@ const DesignerProfilePage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: bookAppointment,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['consultations'] }).then(()=>{})
+
       Swal.fire({
         icon: 'success',
         title: 'Booking Successful!',
